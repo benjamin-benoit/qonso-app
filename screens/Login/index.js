@@ -5,7 +5,14 @@ import { Button, TextInput, Text } from 'react-native-paper';
 
 export default class Login extends Component {
   static navigationOptions = {
-    title: "Login"
+    title: "Login",
+    headerStyle: {
+      backgroundColor: '#ffffff',
+    },
+    headerTintColor: '#CC4122',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
   };
 
   constructor(props) {
