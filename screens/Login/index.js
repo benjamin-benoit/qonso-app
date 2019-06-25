@@ -1,32 +1,7 @@
 import React, { Component } from "react";
-import { ScrollView, View, ActivityIndicator } from "react-native";
-import {
-  Container,
-  
-  
-  Content,
-  Form,
-  Item
-} from "native-base";
-import { Button, Text, TextInput, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { ScrollView, ActivityIndicator } from "react-native";
 import Environment from "../../Environment";
-
-// const theme = {
-//     ...DefaultTheme,
-//     roundness: 2,
-//     colors: {
-//       ...DefaultTheme.colors,
-//       primary: '#3498db',
-//       accent: '#f1c40f',
-      
-//     },
-//     Provider: {
-//         background: '#FF6766',
-//     },
-//     Button: {
-//         background: '#FFFFFF',
-//     }
-//   };
+import { Button, TextInput, Text } from 'react-native-paper';
 
 export default class Login extends Component {
   static navigationOptions = {
@@ -70,52 +45,56 @@ export default class Login extends Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-            <ScrollView style={{ backgroundColor: "#FF6766" }}>
-                <TextInput
-                  ref={component => (this._nickname = component)}
-                  placeholder="Nickname"
-                  onChangeText={nickname => this.setState({ nickname })}
-                  autoFocus={true}
-                  autoCapitalize='none'
-                  onFocus={this.clearNickname}
-                />
-                <TextInput
-                  ref={component => (this._password = component)}
-                  placeholder="Password"
-                  onChangeText={password => this.setState({ password })}
-                  secureTextEntry={true}
-                  onFocus={this.clearPassword}
-                  onSubmitEditing={this._userLogin}
-                />
-              {!!this.state.message && (
-                <Text style={{ fontSize: 14, color: "red", padding: 5 }}>
-                  {this.state.message}
-                </Text>
-              )}
-              {this.state.isLoggingIn && <ActivityIndicator />}
-              <View style={{ margin: 7 }} />
-              <Button mode="contained"
-                block
-                disabled={
-                  this.state.isLoggingIn ||
-                  !this.state.nickname ||
-                  !this.state.password
-                }
-                onPress={this.login}
-              >
-                <Text>Login</Text>
-              </Button>
-              <Button mode="contained"
-                bordered
-                block
-                style={{
-                  marginTop: 10
-                }}
-                onPress={() => navigate("Register", {})}
-              >
-                <Text>Not registered yet ?</Text>
-              </Button>
-            </ScrollView>
+      <ScrollView 
+      style={{ backgroundColor: "#FF6766" }}
+      >
+          <TextInput
+            ref={component => (this._nickname = component)}
+            placeholder="Nickname"
+            onChangeText={nickname => this.setState({ nickname })}
+            autoFocus={true}
+            autoCapitalize='none'
+            onFocus={this.clearNickname}
+          />
+          <TextInput
+            ref={component => (this._password = component)}
+            placeholder="Password"
+            onChangeText={password => this.setState({ password })}
+            secureTextEntry={true}
+            onFocus={this.clearPassword}
+            onSubmitEditing={this._userLogin}
+          />
+        {!!this.state.message && (
+          <Text style={{ fontSize: 14, color: "red", padding: 5 }}>
+            {this.state.message}
+          </Text>
+        )}
+        {this.state.isLoggingIn && <ActivityIndicator />}
+        <Button mode="contained"
+          block
+          disabled={
+            this.state.isLoggingIn ||
+            !this.state.nickname ||
+            !this.state.password
+          }
+          style={{
+            marginTop: 10
+          }}
+          onPress={this.login}
+        >
+          <Text>Login</Text>
+        </Button>
+        <Button mode="contained"
+          bordered
+          block
+          style={{
+            marginTop: 10
+          }}
+          onPress={() => navigate("Register", {})}
+        >
+          <Text>Not registered yet ?</Text>
+        </Button>
+      </ScrollView>
     );
   }
 }

@@ -1,14 +1,27 @@
-import { createStackNavigator, createAppContainer } from "react-navigation";
-import Login from './screens/Login'
+import React from 'react';
+import AppNavigator from './Navigator'
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 
-const AppNavigator = createStackNavigator({
-  Login: {
-    screen: Login,
-  }
-}, {
-    initialRouteName: 'Login',
-  });
+export default function App() {
 
-const AppContainer = createAppContainer(AppNavigator);
+  const theme = {
+    ...DefaultTheme,
+    roundness: 2,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: '#ffffff',
+      accent: '#f1c40f',
+      text: '#515151',
+      surface: '#FF6766',
+      underlineColor: 'transparent',
+      background: '#ffffff'
+    }
+  };
 
-export default AppContainer;
+  return (
+    <PaperProvider theme={theme}>
+      <AppNavigator />
+    </PaperProvider>
+  )
+  
+}
