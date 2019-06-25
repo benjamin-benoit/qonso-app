@@ -14,7 +14,8 @@ export default function App() {
       text: '#515151',
       surface: '#FF6766',
       underlineColor: 'transparent',
-      background: '#ffffff'
+      background: '#ffffff',
+      contained: '#000000',
     }
   };
 

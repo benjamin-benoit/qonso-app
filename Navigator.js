@@ -1,6 +1,7 @@
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import Login from './screens/Login'
 import Register from './screens/Register'
+import UserConsumption from './screens/UserConsumption'
 
 const AppNavigator = createStackNavigator({
     Login: {
@@ -8,6 +9,9 @@ const AppNavigator = createStackNavigator({
     },
     Register: {
         screen: Register,
+    },
+    UserConsumption: {
+        screen: UserConsumption,
     }
 }, {
     initialRouteName: 'Login',

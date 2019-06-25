@@ -47,10 +47,10 @@ export default class Register extends Component {
     const json = await response.json();
     if (response.status === 400) {
       this.setState({ message: json.err });
+      console.log(Environment.CLIENT_API + "/api/user/register");
     } else {
       console.log(json.data);
-      this.setState({ id: json.data.user.id, isLoggingIn: true,score: json.data.user.score, lifePoints: json.data.user.lifePoints, attackPoints: json.data.user.attackPoints, weapon: {}  });
-      navigate("Game", { user: this.state });
+      //   navigate("Game", { user: this.state });
       // this.props.connect(json.data.user, json.meta.token);
     }
   };
@@ -67,6 +67,7 @@ export default class Register extends Component {
                   onChangeText={email => this.setState({ email })}
                   autoFocus={true}
                   onFocus={this.clearEmail}
+                  autoCapitalize = 'none'
                 />
                 <TextInput
                   ref={component => (this._nickname = component)}
@@ -98,7 +99,7 @@ export default class Register extends Component {
                   {this.state.message}
                 </Text>
               )}
-              <Button
+              <Button mode="contained"
                 block
                 style={{
                   marginTop: 10
