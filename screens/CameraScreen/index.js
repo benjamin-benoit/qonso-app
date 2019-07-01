@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Alert, Button } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
@@ -37,6 +37,10 @@ export default class CameraScreen extends React.Component {
         }
   }
 
+  addProduct() {
+    
+  }
+
   render() {
     const { hasCameraPermission, scanned } = this.state;
 
@@ -67,7 +71,23 @@ export default class CameraScreen extends React.Component {
 
   handleBarCodeScanned = ({ type, data }) => {
     this.setState({ scanned: true });
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+    Alert.alert(
+      `Bar code with type ${type} and data ${data} has been scanned!`,
+      'Coca Cola',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Add',
+          // onPress: () => this._killZombie(spawnId),
+          onPress: () => this.addProduct(zombie)
+        }
+      ],
+      { cancelable: true }
+    );
     this.getMoviesFromApiAsync();
   };
 }
