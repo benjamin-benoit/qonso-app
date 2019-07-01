@@ -30,10 +30,15 @@ export default class Main extends Component {
       }
     }
   
-  goCamera(){
-    const { navigate } = this.props.navigation;
-    navigate("CameraScreen",{})
-  }
+    goCamera(){
+      const { navigate } = this.props.navigation;
+      navigate("CameraScreen",{})
+    }
+  
+    goUserConsumption(){
+      const { navigate } = this.props.navigation;
+      navigate("UserConsumption",{})
+    }
 
   render() {
       return(
@@ -43,15 +48,43 @@ export default class Main extends Component {
         followsUserLocation
         style={{flex: 1}} />
         <View style={{ 
-          left: 155,
+          left: 30,
           bottom: 20,
           position: 'absolute'
           }}>
         
+        <TouchableOpacity onPress={()=>this.goUserConsumption()}>
+          <Image  style= {{
+          height: 55, width: 55}}
+          source={require("./../../assets/settings.png")} />
+        </TouchableOpacity>
+        </View>
+
+        <View style={{
+          justifyContent: 'center',
+          width: '100%',
+          alignItems: 'center',
+          bottom: 20,
+          position: 'absolute',
+          }}>
+        
         <TouchableOpacity onPress={()=>this.goCamera()}>
-          <Image 
-          style={{height:75, width:75}} 
+          <Image style= {{
+          height: 65, width: 65}}
           source={require("./../../assets/qrcode.png")} />
+        </TouchableOpacity>
+        </View>
+        
+        <View style={{ 
+          right: 30,
+          bottom: 20,
+          position: 'absolute'
+          }}>
+        
+        <TouchableOpacity onPress={()=>this.goUserConsumption()}>
+          <Image  style= {{
+          height: 55, width: 55}}
+          source={require("./../../assets/list.png")} />
         </TouchableOpacity>
         </View>
         </View>

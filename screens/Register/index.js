@@ -31,7 +31,7 @@ export default class Register extends Component {
   register = async () => {
     const { navigate } = this.props.navigation;
 
-    const response = await fetch(Environment.CLIENT_API + "/api/user/register", {
+    const response = await fetch(Environment.CLIENT_API + "/api/auth/register", {
       headers: {
         "Content-Type": "application/json"
       },
@@ -50,7 +50,8 @@ export default class Register extends Component {
       console.log(Environment.CLIENT_API + "/api/user/register");
     } else {
       console.log(json.data);
-      //   navigate("Game", { user: this.state });
+      this.setState({ id: json.data.user.id, isLoggingIn: true, token: json.meta.token});
+      navigate("Main", { user: this.state });
       // this.props.connect(json.data.user, json.meta.token);
     }
   };

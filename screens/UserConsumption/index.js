@@ -11,7 +11,8 @@ export default class FlatListBasics extends Component {
         headerTintColor: '#CC4122',
         headerTitleStyle: {
           fontWeight: 'bold',
-        },
+        }
+        // headerLeft: null
       };
 
     render() {

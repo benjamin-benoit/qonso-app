@@ -29,7 +29,7 @@ export default class Login extends Component {
   login = async () => {
     const { navigate } = this.props.navigation;
 
-    const response = await fetch(Environment.CLIENT_API + "/api/user/login", {
+    const response = await fetch(Environment.CLIENT_API + "/api/auth/login", {
       headers: {
         "Content-Type": "application/json"
       },
@@ -44,7 +44,9 @@ export default class Login extends Component {
     if (response.status === 400) {
       this.setState({ message: json.err });
     } else {
-      navigate("UserConsumption", { user: this.state });
+      this.setState({ id: json.data.user.id, isLoggingIn: true, token: json.meta.token});
+      console.log(json.meta.token)
+      navigate("Main", { user: this.state });
     }
   };
 
