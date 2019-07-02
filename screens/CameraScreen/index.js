@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Alert, Button } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import Environment from "../../Environment";
 
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
@@ -13,17 +14,22 @@ export default class CameraScreen extends React.Component {
       name: "",
       barcode: 0,
       type: ""
-    }
+    },
+    user: {}
   };
 
   static navigationOptions = {
-        title: "CameraScreen",
-        header: null
-      };  
+      title: "CameraScreen",
+      header: null
+  };  
+
+  componentWillMount() {
+    this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') });      
+  }
   
   async componentDidMount() {
     this.getPermissionsAsync();
-    this.getProductFromApiAsync();
+    // this.getProductFromApiAsync();
   }
 
   getPermissionsAsync = async () => {
@@ -31,17 +37,19 @@ export default class CameraScreen extends React.Component {
     this.setState({ hasCameraPermission: status === 'granted' });
   };
 
-    async getProductFromApiAsync() {
+    async getProductFromApiAsync(data) {
     try {
-        const response = await fetch('https://fr.openfoodfacts.org/api/v0/produit/8024884500403.json');
+      console.log(data)
+        const response = await fetch('https://fr.openfoodfacts.org/api/v0/produit/' + data + '.json');
         const responseJson = await response.json();
         // console.log(responseJson);
+        console.log(responseJson.product.categories.split(',', 1))
         this.setState({
           product:{
-            name: responseJson.product.generic_name_fr,
+            name: responseJson.product.product_name,
             barcode: responseJson.code,
-            type: responseJson.product.categories[0]
-          }
+            type: responseJson.product.categories.split(',', 1)[0]
+          }  
         })
         // console.log(this.state.product.name)
         return responseJson;
@@ -51,25 +59,30 @@ export default class CameraScreen extends React.Component {
     }
   }
 
-  addProduct = async (spawnId) => {
-    const response = await fetch(Environment.CLIENT_API + "/api/consume/create", {
+  addProduct = async () => {
+    const response = await fetch(Environment.CLIENT_API + "/api/consume/createRecursive", {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": this.state.user.token
       },
       method: "POST",
       body: JSON.stringify({
-        key: this.state.product.barcode,
-        title: this.state.product.name,
-        description: this.state.product.type,
-        longitude: 2.363148,
-        latitude: 48.788703,
-        UserId: this.state.user.id,
+        longitude: this.state.locationResult.longitude,
+        latitude: this.state.locationResult.latitude,
+        userId: this.state.user.id,
         productName: this.state.product.name,
         productBarCode: this.state.product.barcode,
         typeName: this.state.product.type
       })
     });
-  }
+
+    const json = await response.json();
+    if (response.status === 400) {
+      console.log(json.err)
+    } else {
+      console.log("OKAY")
+    }
+  };
 
   render() {
     const { hasCameraPermission, scanned } = this.state;
@@ -99,13 +112,13 @@ export default class CameraScreen extends React.Component {
     );
   }
 
-  handleBarCodeScanned = ({ type, data }) => {
+  handleBarCodeScanned = async ({ type, data }) => {
     this.setState({ scanned: true });
-    console.log("ok")
-    console.log(this.state.product.name)
+    // console.log(this.state.product.name)
+    await this.getProductFromApiAsync(data);
     Alert.alert(
-      `Bar code with type ${type} and data ${data} has been scanned!`,
       this.state.product.name,
+      this.state.product.type,
       [
         {
           text: 'Cancel',
@@ -113,8 +126,7 @@ export default class CameraScreen extends React.Component {
         },
         {
           text: 'Add',
-          // onPress: () => this._killZombie(spawnId),
-          //onPress: () => this.addProduct(zombie)
+          onPress: () => this.addProduct()
         }
       ],
       { cancelable: true }
