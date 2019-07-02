@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import { Text, View, StatusBar, Alert, TouchableOpacity, Image } from "react-native";
 import { MapView, Location, Permissions } from "expo";
-import Camera from 'react-native-camera';
-import Svg, {
-    Use,
-  } from 'react-native-svg';
-
+import Environment from "./../../Environment";
 export default class Main extends Component {
 
   static navigationOptions = {
@@ -26,33 +22,99 @@ export default class Main extends Component {
           longitude: null,
           latitudeDelta: null,
           longitudeDelta: null
-        }
+        },
+        user:{},
+        consumes:[]
       }
     }
+
+    componentWillMount() {
+      this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') });      
+    }
+
+    componentDidMount(){
+      this._getLocationAsync();
+      this._getProducts();
+    }
+    
+    _getProducts = async () => {
+      const response = await fetch(Environment.CLIENT_API + "/api/consume/getAll", {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "GET"
+      });
   
+      const json = await response.json();
+      this.setState({ consumes: json.consumes });
+    };
+
     goCamera(){
       const { navigate } = this.props.navigation;
-      navigate("CameraScreen",{})
+      navigate("CameraScreen",{locationResult:this.state.locationResult, user:this.state.user})
     }
   
     goUserConsumption(){
       const { navigate } = this.props.navigation;
-      navigate("UserConsumption",{})
+      navigate("UserConsumption",{user:this.state.user})
     }
 
+    _getLocationAsync = async () => {
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status !== "granted") {
+        this.setState({
+          errorMessage: "Permission to access location was denied"
+        });
+      } else {
+        this.setState({ hasLocationPermissions: true });
+      }
+  
+      let location = await Location.getCurrentPositionAsync({});
+      this.setState({
+        region: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.0922 / 10,
+          longitudeDelta: 0.0421 / 10
+        },
+        locationResult: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        },
+        location
+      });
+    };
+
   render() {
+      console.log(this.state.consumes)
       return(
         <View style={{ flex: 1 }}>
         <MapView 
         showsUserLocation
         followsUserLocation
-        style={{flex: 1}} />
+        style={{flex: 1}} 
+        >
+          {this.state.consumes.map((m, i) => (
+            <MapView.Marker
+              coordinate={{ latitude: m.latitude, longitude: m.longitude }}
+              id={m.id}
+              title={m.Product.name}
+              description={m.description}
+              key={`marker-${i}`}
+              pinColor="#20794C"
+              //image={require("../../../assets/zombie-4.png")}
+              //onPress={(e) => { this._onSpawnPress(e.nativeEvent, m) }}
+            />
+             ))}
+        </MapView>
+
         <View style={{ 
           left: 30,
           bottom: 20,
           position: 'absolute'
           }}>
-        
+
+
         <TouchableOpacity onPress={()=>this.goUserConsumption()}>
           <Image  style= {{
           height: 55, width: 55}}

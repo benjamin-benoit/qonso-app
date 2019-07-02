@@ -18,7 +18,7 @@ export default class CameraScreen extends React.Component {
 
   static navigationOptions = {
         title: "CameraScreen",
-        header : null
+        header: null
       };  
   
   async componentDidMount() {

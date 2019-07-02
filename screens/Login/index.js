@@ -45,7 +45,7 @@ export default class Login extends Component {
       this.setState({ message: json.err });
     } else {
       this.setState({ id: json.data.user.id, isLoggingIn: true, token: json.meta.token});
-      console.log(json.meta.token)
+      //console.log(json.meta.token)
       navigate("Main", { user: this.state });
     }
   };

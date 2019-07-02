@@ -22,7 +22,7 @@ const AppNavigator = createStackNavigator({
         screen: CameraScreen,
     }
 }, {
-    initialRouteName: 'Main',
+    initialRouteName: 'Login',
   });
 
 const AppContainer = createAppContainer(AppNavigator);
