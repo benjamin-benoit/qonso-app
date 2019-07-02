@@ -9,15 +9,21 @@ export default class CameraScreen extends React.Component {
   state = {
     hasCameraPermission: null,
     scanned: false,
+    product: {
+      name: "",
+      barcode: 0,
+      type: ""
+    }
   };
 
   static navigationOptions = {
         title: "CameraScreen",
         header : null
-      };
-
+      };  
+  
   async componentDidMount() {
     this.getPermissionsAsync();
+    this.getProductFromApiAsync();
   }
 
   getPermissionsAsync = async () => {
@@ -25,20 +31,44 @@ export default class CameraScreen extends React.Component {
     this.setState({ hasCameraPermission: status === 'granted' });
   };
 
-    async getMoviesFromApiAsync() {
+    async getProductFromApiAsync() {
     try {
-            const response = await fetch('https://fr.openfoodfacts.org/api/v0/produit/8024884500403.json');
-            const responseJson = await response.json();
-            console.log(responseJson);
-            return responseJson.movies;
-        }
-        catch (error) {
-            console.error(error);
-        }
+        const response = await fetch('https://fr.openfoodfacts.org/api/v0/produit/8024884500403.json');
+        const responseJson = await response.json();
+        // console.log(responseJson);
+        this.setState({
+          product:{
+            name: responseJson.product.generic_name_fr,
+            barcode: responseJson.code,
+            type: responseJson.product.categories[0]
+          }
+        })
+        // console.log(this.state.product.name)
+        return responseJson;
+    }
+    catch (error) {
+        console.error(error);
+    }
   }
 
-  addProduct() {
-    
+  addProduct = async (spawnId) => {
+    const response = await fetch(Environment.CLIENT_API + "/api/consume/create", {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST",
+      body: JSON.stringify({
+        key: this.state.product.barcode,
+        title: this.state.product.name,
+        description: this.state.product.type,
+        longitude: 2.363148,
+        latitude: 48.788703,
+        UserId: this.state.user.id,
+        productName: this.state.product.name,
+        productBarCode: this.state.product.barcode,
+        typeName: this.state.product.type
+      })
+    });
   }
 
   render() {
@@ -71,10 +101,11 @@ export default class CameraScreen extends React.Component {
 
   handleBarCodeScanned = ({ type, data }) => {
     this.setState({ scanned: true });
-
+    console.log("ok")
+    console.log(this.state.product.name)
     Alert.alert(
       `Bar code with type ${type} and data ${data} has been scanned!`,
-      'Coca Cola',
+      this.state.product.name,
       [
         {
           text: 'Cancel',
@@ -83,12 +114,11 @@ export default class CameraScreen extends React.Component {
         {
           text: 'Add',
           // onPress: () => this._killZombie(spawnId),
-          onPress: () => this.addProduct(zombie)
+          //onPress: () => this.addProduct(zombie)
         }
       ],
       { cancelable: true }
     );
-    this.getMoviesFromApiAsync();
   };
 }
 
