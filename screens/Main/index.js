@@ -86,7 +86,21 @@ export default class Main extends Component {
     };
 
   render() {
-      console.log(this.state.consumes)
+      const icons = require('./../../assets');
+
+      const productTable = this.state.consumes.map((consume, index) => {
+          const icon = (icons.markerIcons[consume.Product.Type.name]) ? icons.markerIcons[consume.Product.Type.name]:icons.markerIcons['Default'];
+
+          return <MapView.Marker 
+            coordinate={{ latitude: consume.latitude, longitude: consume.longitude }}
+            id={consume.id}
+            title={consume.Product.name}
+            description={consume.description}
+            image={icon}
+            key={`marker-${index}`}
+          />
+      });
+
       return(
         <View style={{ flex: 1 }}>
         <MapView 
@@ -94,18 +108,7 @@ export default class Main extends Component {
         followsUserLocation
         style={{flex: 1}} 
         >
-          {this.state.consumes.map((m, i) => (
-            <MapView.Marker
-              coordinate={{ latitude: m.latitude, longitude: m.longitude }}
-              id={m.id}
-              title={m.Product.name}
-              description={m.description}
-              key={`marker-${i}`}
-              pinColor="#20794C"
-              //image={require("../../../assets/zombie-4.png")}
-              //onPress={(e) => { this._onSpawnPress(e.nativeEvent, m) }}
-            />
-             ))}
+          {productTable}
         </MapView>
 
         <View style={{ 
