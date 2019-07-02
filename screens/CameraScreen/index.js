@@ -15,7 +15,8 @@ export default class CameraScreen extends React.Component {
       barcode: 0,
       type: ""
     },
-    user: {}
+    user: {},
+    locationResult: {}
   };
 
   static navigationOptions = {
@@ -24,7 +25,7 @@ export default class CameraScreen extends React.Component {
   };  
 
   componentWillMount() {
-    this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') });      
+    this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') ,  locationResult: this.props.navigation.getParam('locationResult', 'defaultValue') });      
   }
   
   async componentDidMount() {
