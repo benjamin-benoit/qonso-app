@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Text, View, StyleSheet, Alert, Button } from 'react-native';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
+import * as React from "react";
+import { Text, View, StyleSheet, Alert, Button } from "react-native";
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
 import Environment from "../../Environment";
 
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BarCodeScanner } from "expo-barcode-scanner";
 
 export default class CameraScreen extends React.Component {
   state = {
@@ -20,14 +20,20 @@ export default class CameraScreen extends React.Component {
   };
 
   static navigationOptions = {
-      title: "CameraScreen",
-      header: null
-  };  
+    title: "CameraScreen",
+    header: null
+  };
 
   componentWillMount() {
-    this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') ,  locationResult: this.props.navigation.getParam('locationResult', 'defaultValue') });      
+    this.setState({
+      user: this.props.navigation.getParam("user", "defaultValue"),
+      locationResult: this.props.navigation.getParam(
+        "locationResult",
+        "defaultValue"
+      )
+    });
   }
-  
+
   async componentDidMount() {
     this.getPermissionsAsync();
     // this.getProductFromApiAsync();
@@ -35,53 +41,57 @@ export default class CameraScreen extends React.Component {
 
   getPermissionsAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+    this.setState({ hasCameraPermission: status === "granted" });
   };
 
-    async getProductFromApiAsync(data) {
+  async getProductFromApiAsync(data) {
     try {
-      console.log(data)
-        const response = await fetch('https://fr.openfoodfacts.org/api/v0/produit/' + data + '.json');
-        const responseJson = await response.json();
-        // console.log(responseJson);
-        console.log(responseJson.product.categories.split(',', 1))
-        this.setState({
-          product:{
-            name: responseJson.product.product_name,
-            barcode: responseJson.code,
-            type: responseJson.product.categories.split(',', 1)[0]
-          }  
-        })
-        // console.log(this.state.product.name)
-        return responseJson;
-    }
-    catch (error) {
-        console.error(error);
+      console.log(data);
+      const response = await fetch(
+        "https://fr.openfoodfacts.org/api/v0/produit/" + data + ".json"
+      );
+      const responseJson = await response.json();
+      // console.log(responseJson);
+      console.log(responseJson.product.categories.split(",", 1));
+      this.setState({
+        product: {
+          name: responseJson.product.product_name,
+          barcode: responseJson.code,
+          type: responseJson.product.categories.split(",", 1)[0]
+        }
+      });
+      // console.log(this.state.product.name)
+      return responseJson;
+    } catch (error) {
+      console.error(error);
     }
   }
 
   addProduct = async () => {
-    const response = await fetch(Environment.CLIENT_API + "/api/consume/createRecursive", {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": this.state.user.token
-      },
-      method: "POST",
-      body: JSON.stringify({
-        longitude: this.state.locationResult.longitude,
-        latitude: this.state.locationResult.latitude,
-        userId: this.state.user.id,
-        productName: this.state.product.name,
-        productBarCode: this.state.product.barcode,
-        typeName: this.state.product.type
-      })
-    });
+    const response = await fetch(
+      Environment.CLIENT_API + "/api/consume/createRecursive",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.state.user.token
+        },
+        method: "POST",
+        body: JSON.stringify({
+          longitude: this.state.locationResult.longitude,
+          latitude: this.state.locationResult.latitude,
+          userId: this.state.user.id,
+          productName: this.state.product.name,
+          productBarCode: this.state.product.barcode,
+          typeName: this.state.product.type
+        })
+      }
+    );
 
     const json = await response.json();
     if (response.status === 400) {
-      console.log(json.err)
+      console.log(json.err);
     } else {
-      console.log("OKAY")
+      console.log("OKAY");
     }
   };
 
@@ -98,16 +108,20 @@ export default class CameraScreen extends React.Component {
       <View
         style={{
           flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-        }}>
+          flexDirection: "column",
+          justifyContent: "flex-end"
+        }}
+      >
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
 
         {scanned && (
-          <Button title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
+          <Button
+            title={"Tap to Scan Again"}
+            onPress={() => this.setState({ scanned: false })}
+          />
         )}
       </View>
     );
@@ -122,11 +136,11 @@ export default class CameraScreen extends React.Component {
       this.state.product.type,
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel"
         },
         {
-          text: 'Add',
+          text: "Add",
           onPress: () => this.addProduct()
         }
       ],
@@ -134,7 +148,6 @@ export default class CameraScreen extends React.Component {
     );
   };
 }
-
 
 //data.product.generic_name_fr
 //data.product.code.keywords.

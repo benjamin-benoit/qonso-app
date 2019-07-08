@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { ScrollView, ActivityIndicator } from "react-native";
 import Environment from "../../Environment";
-import { Button, TextInput, Text } from 'react-native-paper';
+import { Button, TextInput, Text } from "react-native-paper";
 
 export default class Login extends Component {
   static navigationOptions = {
     title: "Login",
     headerStyle: {
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff"
     },
-    headerTintColor: '#CC4122',
+    headerTintColor: "#CC4122",
     headerTitleStyle: {
-      fontWeight: 'bold',
-    },
+      fontWeight: "bold"
+    }
   };
 
   constructor(props) {
@@ -44,7 +44,11 @@ export default class Login extends Component {
     if (response.status === 400) {
       this.setState({ message: json.err });
     } else {
-      this.setState({ id: json.data.user.id, isLoggingIn: true, token: json.meta.token});
+      this.setState({
+        id: json.data.user.id,
+        isLoggingIn: true,
+        token: json.meta.token
+      });
       //console.log(json.meta.token)
       navigate("Main", { user: this.state });
     }
@@ -53,32 +57,31 @@ export default class Login extends Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <ScrollView 
-      style={{ backgroundColor: "#FF6766" }}
-      >
-          <TextInput
-            ref={component => (this._nickname = component)}
-            placeholder="Nickname"
-            onChangeText={nickname => this.setState({ nickname })}
-            autoFocus={true}
-            autoCapitalize='none'
-            onFocus={this.clearNickname}
-          />
-          <TextInput
-            ref={component => (this._password = component)}
-            placeholder="Password"
-            onChangeText={password => this.setState({ password })}
-            secureTextEntry={true}
-            onFocus={this.clearPassword}
-            onSubmitEditing={this._userLogin}
-          />
+      <ScrollView style={{ backgroundColor: "#FF6766" }}>
+        <TextInput
+          ref={component => (this._nickname = component)}
+          placeholder="Nickname"
+          onChangeText={nickname => this.setState({ nickname })}
+          autoFocus={true}
+          autoCapitalize="none"
+          onFocus={this.clearNickname}
+        />
+        <TextInput
+          ref={component => (this._password = component)}
+          placeholder="Password"
+          onChangeText={password => this.setState({ password })}
+          secureTextEntry={true}
+          onFocus={this.clearPassword}
+          onSubmitEditing={this._userLogin}
+        />
         {!!this.state.message && (
           <Text style={{ fontSize: 14, color: "red", padding: 5 }}>
             {this.state.message}
           </Text>
         )}
         {this.state.isLoggingIn && <ActivityIndicator />}
-        <Button mode="contained"
+        <Button
+          mode="contained"
           block
           disabled={
             this.state.isLoggingIn ||
@@ -92,7 +95,8 @@ export default class Login extends Component {
         >
           <Text>Login</Text>
         </Button>
-        <Button mode="contained"
+        <Button
+          mode="contained"
           bordered
           block
           style={{
