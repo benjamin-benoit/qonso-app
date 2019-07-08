@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import Environment from "./../../Environment";
 
-export default class FlatListBasics extends Component {
+export default class UserConsumption extends Component {
 
     static navigationOptions = {
-        title: "My Consumption",
+        title: "My Consumptions",
         headerStyle: {
           backgroundColor: '#ffffff',
         },
@@ -52,6 +52,9 @@ export default class FlatListBasics extends Component {
   //   }
 
 
+  componentWillMount() {
+    this.setState({ user: this.props.navigation.getParam('user', 'defaultValue') });
+  }
 
   componentDidMount(){
     this._getConsumptions();
@@ -59,6 +62,7 @@ export default class FlatListBasics extends Component {
   }
 
   _getConsumptions = async () => {
+    console.log(this.state.user.id)
     const response = await fetch(Environment.CLIENT_API + "/api/consume/getByUserId/" + this.state.user.id, {
       headers: {
         "Content-Type": "application/json"
@@ -67,61 +71,17 @@ export default class FlatListBasics extends Component {
     });
 
     const json = await response.json();
+    console.log(json)
     this.setState({ consumes: json.consumes });
   };
 
     render() {
-      // if (this.state.isLoading) {
-      //   return (
-      //     <View style={styles.container}>
-      //       <ActivityIndicator size="large" />
-      //     </View>
-      //   );
-      // } else {
-        return (
-          <FlatList
-          data={this.state.consumes}
-            renderRow={rowData => {
-              return (
-                <View style={styles.listItem}>
-                  {/* <View style={styles.imageWrapper}>
-                    <Image
-                      style={{ width: 70, height: 70 }}
-                      source={{
-                        uri: rowData.data.icon_img === '' ||
-                          rowData.data.icon_img === null
-                          ? 'https://via.placeholder.com/70x70.jpg'
-                          : rowData.data.icon_img,
-                      }}
-                    />
-                  </View> */}
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.title}>
-                      {rowData.data.display_name}
-                    </Text>
-                    {/* <TouchableOpacity
-                      onPress={() => Linking.openURL('https://www.google.com')}>
-                      <Text style={styles.subtitle}>
-                        {rowData.data.public_description}
-                      </Text>
-                    </TouchableOpacity> */}
-                  </View>
-                </View>
-              );
-            }}
-            // onEndReached={() =>
-            //   this.setState({ isLoadingMore: true }, () => this.fetchMore())}
-            // renderFooter={() => {
-            //   return (
-            //     this.state.isLoadingMore &&
-            //     <View style={{ flex: 1, padding: 10 }}>
-            //       <ActivityIndicator size="small" />
-            //     </View>
-            //   );
-            // }}
-          />
-        );
-      // }
+      return (
+      <FlatList
+        data={this.state.consumes}
+        renderItem={({item}) => <Text style={styles.item}>{item.Product.name}</Text>}
+      />
+      )
     }
   }
   
