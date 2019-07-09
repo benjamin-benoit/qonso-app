@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native";
 import Environment from "../../Environment";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, TextInput, Text, Snackbar } from "react-native-paper";
 
 export default class Register extends Component {
   static navigationOptions = {
@@ -19,6 +19,7 @@ export default class Register extends Component {
     super(props);
 
     this.state = {
+      visible: false,
       email: "",
       nickname: "",
       password: "",
@@ -49,7 +50,9 @@ export default class Register extends Component {
     const json = await response.json();
     if (response.status === 400) {
       this.setState({ message: json.err });
-      console.log(Environment.CLIENT_API + "/api/user/register");
+      this.setState({
+        visible: true
+      });
     } else {
       console.log(json.data);
       this.setState({
@@ -58,7 +61,6 @@ export default class Register extends Component {
         token: json.meta.token
       });
       navigate("Main", { user: this.state });
-      // this.props.connect(json.data.user, json.meta.token);
     }
   };
 
@@ -99,11 +101,6 @@ export default class Register extends Component {
           onFocus={this.clearPasswordConfirmation}
           onSubmitEditing={this._userLogin}
         />
-        {!!this.state.message && (
-          <Text style={{ fontSize: 14, color: "red", padding: 5 }}>
-            {this.state.message}
-          </Text>
-        )}
         <Button
           mode="contained"
           block
@@ -120,6 +117,21 @@ export default class Register extends Component {
         >
           <Text>Register</Text>
         </Button>
+        <Snackbar
+          visible={this.state.visible}
+          onDismiss={() => this.setState({ visible: false })}
+          action={{
+            label: "Undo",
+            onPress: () => {
+              // Do something
+            }
+          }}
+          style={{
+            position: "absolute"
+          }}
+        >
+          {this.state.message}
+        </Snackbar>
       </ScrollView>
     );
   }

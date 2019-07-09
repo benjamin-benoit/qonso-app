@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ScrollView, ActivityIndicator } from "react-native";
 import Environment from "../../Environment";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Snackbar, Button, TextInput, Text } from "react-native-paper";
 
 export default class Login extends Component {
   static navigationOptions = {
@@ -19,6 +19,8 @@ export default class Login extends Component {
     super(props);
 
     this.state = {
+      isButtonDisabled: false,
+      visible: false,
       id: "",
       nickname: "",
       isLoggingIn: false,
@@ -27,6 +29,9 @@ export default class Login extends Component {
   }
 
   login = async () => {
+    this.setState({
+      isButtonDisabled: true
+    });
     const { navigate } = this.props.navigation;
 
     const response = await fetch(Environment.CLIENT_API + "/api/auth/login", {
@@ -43,13 +48,16 @@ export default class Login extends Component {
     const json = await response.json();
     if (response.status === 400) {
       this.setState({ message: json.err });
+      this.setState({
+        isButtonDisabled: false,
+        visible: true
+      });
     } else {
       this.setState({
         id: json.data.user.id,
         isLoggingIn: true,
         token: json.meta.token
       });
-      //console.log(json.meta.token)
       navigate("Main", { user: this.state });
     }
   };
@@ -74,11 +82,6 @@ export default class Login extends Component {
           onFocus={this.clearPassword}
           onSubmitEditing={this._userLogin}
         />
-        {!!this.state.message && (
-          <Text style={{ fontSize: 14, color: "red", padding: 5 }}>
-            {this.state.message}
-          </Text>
-        )}
         {this.state.isLoggingIn && <ActivityIndicator />}
         <Button
           mode="contained"
@@ -86,7 +89,8 @@ export default class Login extends Component {
           disabled={
             this.state.isLoggingIn ||
             !this.state.nickname ||
-            !this.state.password
+            !this.state.password ||
+            this.state.isButtonDisabled
           }
           style={{
             marginTop: 10
@@ -106,6 +110,21 @@ export default class Login extends Component {
         >
           <Text>Not registered yet ?</Text>
         </Button>
+        <Snackbar
+          visible={this.state.visible}
+          onDismiss={() => this.setState({ visible: false })}
+          action={{
+            label: "Undo",
+            onPress: () => {
+              // Do something
+            }
+          }}
+          style={{
+            position: "absolute"
+          }}
+        >
+          {this.state.message}
+        </Snackbar>
       </ScrollView>
     );
   }

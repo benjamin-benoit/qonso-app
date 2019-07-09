@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { ScrollView, ActivityIndicator } from "react-native";
+import { ScrollView } from "react-native";
 import Environment from "../../Environment";
-import { Button, TextInput, Text } from "react-native-paper";
+import { Button, TextInput, Text, Snackbar } from "react-native-paper";
 
 export default class Login extends Component {
   static navigationOptions = {
@@ -19,6 +19,8 @@ export default class Login extends Component {
     super(props);
 
     this.state = {
+      isButtonDisabled: false,
+      visible: false,
       id: "",
       nickname: "",
       isLoggingIn: false,
@@ -33,6 +35,9 @@ export default class Login extends Component {
   }
 
   _changePassword = async () => {
+    this.setState({
+      isButtonDisabled: true
+    });
     const response = await fetch(
       Environment.CLIENT_API + "/api/user/changePassword",
       {
@@ -54,8 +59,15 @@ export default class Login extends Component {
     const json = await response.json();
     if (response.status === 400) {
       this.setState({ message: json.err });
+      this.setState({
+        isButtonDisabled: false,
+        visible: true
+      });
     } else {
       this.setState({ message: "Pasword updated" });
+      this.setState({
+        isButtonDisabled: false
+      });
     }
   };
 
@@ -63,22 +75,24 @@ export default class Login extends Component {
     const { navigate } = this.props.navigation;
     return (
       <ScrollView style={{ backgroundColor: "#FF6766" }}>
-          <TextInput
-            placeholder="New password"
-            onChangeText={newPassword => this.setState({ newPassword })}
-            autoFocus={true}
-            autoCapitalize="none"
-            onFocus={this.clearNewPassword}
-          />
-          <TextInput
-            placeholder="New password confirmation"
-            onChangeText={newPassword_confirmation =>
-              this.setState({ newPassword_confirmation })
-            }
-            onFocus={this.clearNewPassword_confirmation}
-            autoCapitalize="none"
-            onSubmitEditing={this._userLogin}
-          />
+        <TextInput
+          placeholder="New password"
+          secureTextEntry={true}
+          onChangeText={newPassword => this.setState({ newPassword })}
+          autoFocus={true}
+          autoCapitalize="none"
+          onFocus={this.clearNewPassword}
+        />
+        <TextInput
+          placeholder="New password confirmation"
+          secureTextEntry={true}
+          onChangeText={newPassword_confirmation =>
+            this.setState({ newPassword_confirmation })
+          }
+          onFocus={this.clearNewPassword_confirmation}
+          autoCapitalize="none"
+          onSubmitEditing={this._userLogin}
+        />
         <Button
           mode="contained"
           bordered
@@ -88,17 +102,27 @@ export default class Login extends Component {
           }}
           onPress={() => navigate("Register", {})}
           disabled={
-            !this.state.newPassword || !this.state.newPassword_confirmation
+            !this.state.newPassword || !this.state.newPassword_confirmation || this.state.isButtonDisabled
           }
           onPress={() => this._changePassword()}
         >
           <Text>Update new password</Text>
         </Button>
-        {!!this.state.message && (
-          <Text style={{ fontSize: 14, color: "green", padding: 5 }}>
-            {this.state.message}
-          </Text>
-        )}
+        <Snackbar
+          visible={this.state.visible}
+          onDismiss={() => this.setState({ visible: false })}
+          action={{
+            label: "Undo",
+            onPress: () => {
+              // Do something
+            }
+          }}
+          style={{
+            position: "absolute"
+          }}
+        >
+          {this.state.message}
+        </Snackbar>
       </ScrollView>
     );
   }

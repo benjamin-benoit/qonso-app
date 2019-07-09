@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component } from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import Environment from "./../../Environment";
 
@@ -57,6 +57,7 @@ export default class UserConsumption extends Component {
           renderItem={({ item }) => (
             <Text style={styles.list}>{item.Product.name}</Text>
           )}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     );
