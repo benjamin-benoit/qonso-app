@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, TouchableWithoutFeedback, Alert } from "react-native";
 import Environment from "./../../Environment";
 
 export default class UserConsumption extends Component {
@@ -18,10 +18,18 @@ export default class UserConsumption extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      refreshing: false,
       errorMessage: null,
       user: {},
       consumes: []
     };
+  }
+
+  _onRefresh = () => {
+    this.setState({ refreshing: true });
+    fetchData().then(() => {
+      this.setState({ refreshing: false });
+    });
   }
 
   componentWillMount() {
@@ -50,9 +58,28 @@ export default class UserConsumption extends Component {
   };
 
   deleteConsumption = async (item) => {
+    Alert.alert(
+      "Do you really want to delete this item ?",
+      item.Product.name,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => this.deleteConfirmation(item)
+        }
+      ],
+      { cancelable: true }
+    );
+  }
+
+  deleteConfirmation = async (item) => {
     const response = await fetch(Environment.CLIENT_API + "/api/consume/delete", {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: this.state.user.token
       },
       method: "DELETE",
       body: JSON.stringify({
@@ -63,7 +90,9 @@ export default class UserConsumption extends Component {
     if (response.status === 400) {
       console.log(json.err);
     } else {
-      //REALOAD VIEW
+      alert("Consumption is deleted");
+      this._getConsumptions();
+      this._onRefresh
     }
   }
 
@@ -73,8 +102,8 @@ export default class UserConsumption extends Component {
         <FlatList
           data={this.state.consumes.reverse()}
           renderItem={({ item }) => (
-            <TouchableWithoutFeedback onPress={ () => this.deleteConsumption(item)}>
-            <Text style={styles.list}>{item.Product.name}</Text>
+            <TouchableWithoutFeedback onPress={() => this.deleteConsumption(item)}>
+              <Text style={styles.list}>{item.Product.name}</Text>
             </TouchableWithoutFeedback>
           )}
           keyExtractor={(item, index) => index.toString()}

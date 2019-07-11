@@ -38,9 +38,17 @@ export default class Main extends Component {
     this.setState({
       user: this.props.navigation.getParam("user", "defaultValue")
     });
+    this.setState({
+      forceRefresh: Math.floor(Math.random() * 100)
+    })
+    this._getLocationAsync();
+    this._getProducts();
   }
 
   componentDidMount() {
+    this.setState({
+      forceRefresh: Math.floor(Math.random() * 100)
+    })
     this._getLocationAsync();
     this._getProducts();
   }
@@ -80,6 +88,7 @@ export default class Main extends Component {
   }
 
   setUserLocation(coordinate) {
+    console.log("move");
     this.setState({
       userLocation: {
         latitude: coordinate.latitude,
@@ -134,15 +143,15 @@ export default class Main extends Component {
           title={consume.Product.name}
           description={consume.description}
           image={icon}
-          key={`marker-${index}`}
+          key={`marker-${index}${Date.now()}`}
         />
       );
     });
 
     return (
       <View style={{ flex: 1 }}>
-        <MapView showsUserLocation followsUserLocation style={{ flex: 1 }}
-        onUserLocationChange={locationChangedResult => this.setUserLocation(locationChangedResult.nativeEvent.coordinate)}>
+        <MapView key={this.state.forceRefresh} showsUserLocation followsUserLocation style={{ flex: 1 }}
+          onUserLocationChange={locationChangedResult => this.setUserLocation(locationChangedResult.nativeEvent.coordinate)}>
           {productTable}
         </MapView>
 

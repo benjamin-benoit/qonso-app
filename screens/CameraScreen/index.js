@@ -88,7 +88,8 @@ export default class CameraScreen extends React.Component {
     if (response.status === 400) {
       console.log(json.err);
     } else {
-      console.log("OKAY");
+      const { navigate } = this.props.navigation;
+      navigate("Main", { user: this.state.user });
     }
   };
 

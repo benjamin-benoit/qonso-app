@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Alert } from "react-native";
 import Environment from "../../Environment";
 import { Button, TextInput, Text, Snackbar } from "react-native-paper";
 
@@ -38,6 +38,8 @@ export default class Login extends Component {
     this.setState({
       isButtonDisabled: true
     });
+    console.log(this.state.newPassword)
+    console.log(this.state.newPassword_confirmation)
     const response = await fetch(
       Environment.CLIENT_API + "/api/user/changePassword",
       {
@@ -64,12 +66,24 @@ export default class Login extends Component {
         visible: true
       });
     } else {
-      this.setState({ message: "Pasword updated" });
-      this.setState({
-        isButtonDisabled: false
-      });
+      Alert.alert(
+        "Password",
+        "Successfully updated",
+        [
+        {
+          text: "Ok",
+          onPress: () => this.navigateToSettings()
+        }
+        ],
+        { cancelable: true }
+      );
     }
   };
+
+  navigateToSettings() {
+    const { navigate } = this.props.navigation;
+    navigate("Settings", { user: this.state.user });
+  }
 
   render() {
     const { navigate } = this.props.navigation;
