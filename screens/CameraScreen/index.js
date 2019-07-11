@@ -51,7 +51,6 @@ export default class CameraScreen extends React.Component {
         "https://fr.openfoodfacts.org/api/v0/produit/" + data + ".json"
       );
       const responseJson = await response.json();
-      // console.log(responseJson);
       console.log(responseJson.product.categories.split(",", 1));
       this.setState({
         product: {
@@ -60,7 +59,6 @@ export default class CameraScreen extends React.Component {
           type: responseJson.product.categories.split(",", 1)[0]
         }
       });
-      // console.log(this.state.product.name)
       return responseJson;
     } catch (error) {
       console.error(error);
@@ -86,7 +84,6 @@ export default class CameraScreen extends React.Component {
         })
       }
     );
-
     const json = await response.json();
     if (response.status === 400) {
       console.log(json.err);

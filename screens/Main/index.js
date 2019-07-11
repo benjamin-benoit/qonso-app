@@ -79,6 +79,17 @@ export default class Main extends Component {
     navigate("Settings", { user: this.state.user });
   }
 
+  setUserLocation(coordinate) {
+    this.setState({
+      userLocation: {
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.004
+      }
+    })
+  }
+
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
@@ -130,7 +141,8 @@ export default class Main extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <MapView showsUserLocation followsUserLocation style={{ flex: 1 }}>
+        <MapView showsUserLocation followsUserLocation style={{ flex: 1 }}
+        onUserLocationChange={locationChangedResult => this.setUserLocation(locationChangedResult.nativeEvent.coordinate)}>
           {productTable}
         </MapView>
 
