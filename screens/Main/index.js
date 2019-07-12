@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { MapView, Location, Permissions } from "expo";
 import Environment from "./../../Environment";
+import { NavigationEvents } from "react-navigation";
 export default class Main extends Component {
   static navigationOptions = {
     title: "Main",
@@ -40,7 +41,7 @@ export default class Main extends Component {
     });
     this.setState({
       forceRefresh: Math.floor(Math.random() * 100)
-    })
+    });
     this._getLocationAsync();
     this._getProducts();
   }
@@ -48,7 +49,7 @@ export default class Main extends Component {
   componentDidMount() {
     this.setState({
       forceRefresh: Math.floor(Math.random() * 100)
-    })
+    });
     this._getLocationAsync();
     this._getProducts();
   }
@@ -96,7 +97,7 @@ export default class Main extends Component {
         latitudeDelta: 0.004,
         longitudeDelta: 0.004
       }
-    })
+    });
   }
 
   _getLocationAsync = async () => {
@@ -135,6 +136,10 @@ export default class Main extends Component {
 
       return (
         <MapView.Marker
+          onWillFocus={payload => {
+            console.log("refresh");
+            this._getProducts();
+          }}
           coordinate={{
             latitude: consume.latitude,
             longitude: consume.longitude
@@ -150,8 +155,21 @@ export default class Main extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <MapView key={this.state.forceRefresh} showsUserLocation followsUserLocation style={{ flex: 1 }}
-          onUserLocationChange={locationChangedResult => this.setUserLocation(locationChangedResult.nativeEvent.coordinate)}>
+        <NavigationEvents
+          onWillFocus={payload => {
+            console.log("refresh");
+            this._getProducts();
+          }}
+        />
+        <MapView
+          key={this.state.forceRefresh}
+          showsUserLocation
+          followsUserLocation
+          style={{ flex: 1 }}
+          onUserLocationChange={locationChangedResult =>
+            this.setUserLocation(locationChangedResult.nativeEvent.coordinate)
+          }
+        >
           {productTable}
         </MapView>
 
